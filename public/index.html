@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>代付分享系统</title>
+    <!-- 微信分享预览相关meta标签 -->
+    <meta name="description" content="代付分享系统 - 方便快捷的代付服务">
+    <meta property="og:title" content="代付分享系统">
+    <meta property="og:description" content="朋友之间便捷的代付服务，快速创建代付订单并分享给好友">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:3000">
+    <meta property="og:image" content="http://localhost:3000/wechat-preview.jpg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 35px 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        h1 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #999;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        input::placeholder {
+            color: #bbb;
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #result {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #e8f4fd 0%, #f0f9ff 100%);
+            border-radius: 12px;
+            border: 2px dashed #667eea;
+        }
+        #result.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        .result-title {
+            font-size: 15px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .link-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .link-text {
+            flex: 1;
+            font-size: 13px;
+            color: #666;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .copy-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            background: #5568d3;
+        }
+        .copy-btn.copied {
+            background: #38ef7d;
+        }
+        .tips {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.6;
+            text-align: center;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .icon { animation: pulse 2s ease-in-out infinite; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="icon">💸</div>
+                <h1>代付分享系统</h1>
+                <p class="subtitle">创建代付订单，分享给朋友帮忙付款</p>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">代付金额 (元)</label>
+                <input type="number" id="amount" placeholder="请输入金额，如：21.9" step="0.01" min="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="description">订单描述</label>
+                <input type="text" id="description" placeholder="请输入订单描述，如：代付外卖">
+            </div>
+
+            <button class="btn" onclick="createOrder()" id="submitBtn">
+                创建代付订单
+            </button>
+
+            <div id="result">
+                <div class="result-title">🎉 代付链接已生成！</div>
+                <div class="link-box">
+                    <span class="link-text" id="orderLink"></span>
+                    <button class="copy-btn" onclick="copyLink()" id="copyBtn">复制</button>
+                </div>
+                <p class="tips">💡 复制链接发送给朋友，他们点击后可以帮您代付</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUrl = '';
+
+        function createOrder() {
+            const amount = document.getElementById('amount').value;
+            const description = document.getElementById('description').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+
+            if (!amount || amount <= 0) {
+                alert('请输入有效的金额');
+                return;
+            }
+
+            if (!description) {
+                alert('请输入订单描述');
+                return;
+            }
+
+            // 禁用按钮，防止重复提交
+            submitBtn.disabled = true;
+            submitBtn.textContent = '创建中...';
+
+            // 调用后端API创建订单
+            fetch(`/create-order?amount=${encodeURIComponent(amount)}&desc=${encodeURIComponent(description)}`)
+                .then(response => response.json())
+                .then(data => {
+                    currentUrl = data.url;
+                    document.getElementById('orderLink').textContent = data.url;
+                    resultDiv.classList.add('show');
+                    submitBtn.textContent = '创建代付订单';
+                    submitBtn.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('创建订单失败，请重试');
+                    submitBtn.textContent = '创建代付订单';
+                    submitBtn.disabled = false;
+                });
+        }
+
+        function copyLink() {
+            if (!currentUrl) return;
+
+            const copyBtn = document.getElementById('copyBtn');
+
+            // 使用现代 Clipboard API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(currentUrl).then(() => {
+                    copyBtn.textContent = '已复制';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = '复制';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    fallbackCopy();
+                });
+            } else {
+                fallbackCopy();
+            }
+        }
+
+        function fallbackCopy() {
+            // 兼容旧浏览器的复制方法
+            const textArea = document.createElement('textarea');
+            textArea.value = currentUrl;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.textContent = '已复制';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = '复制';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                alert('复制失败，请手动复制链接');
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        // 添加回车提交功能
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const amount = document.getElementById('amount').value;
+                const description = document.getElementById('description').value;
+                if (amount && description) {
+                    createOrder();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
