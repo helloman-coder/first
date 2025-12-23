@@ -82,10 +82,21 @@ app.get('/pay/:id', (req, res) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <title>代付请求 - ¥${order.amount}</title>
 
+        <!-- 微信分享预览 - 完整 meta 标签 -->
         <meta name="description" content="朋友请求您代付${order.amount}元，${order.description}">
+        <meta itemprop="name" content="代付请求 - ¥${order.amount}">
+        <meta itemprop="description" content="朋友请求您代付${order.amount}元，${order.description}">
+        <meta itemprop="image" content="${baseUrl}/wechat-preview.jpg">
+
+        <!-- Open Graph 协议 -->
+        <meta property="og:site_name" content="代付系统">
         <meta property="og:title" content="代付请求 - ¥${order.amount}">
         <meta property="og:description" content="朋友请求您代付${order.amount}元，${order.description}">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="${baseUrl}/pay/${orderId}">
         <meta property="og:image" content="${baseUrl}/wechat-preview.jpg">
+        <meta property="og:image:width" content="400">
+        <meta property="og:image:height" content="400">
 
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
