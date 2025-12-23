@@ -487,6 +487,11 @@ app.get('/cancel/:id', (req, res) => {
     `);
 });
 
-app.listen(PORT, () => {
-    console.log("服务器运行在 http://localhost:" + PORT);
-});
+// Vercel 导出 app，本地运行时直接监听
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log("服务器运行在 http://localhost:" + PORT);
+    });
+}
+
+module.exports = app;
